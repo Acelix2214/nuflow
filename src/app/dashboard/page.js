@@ -37,6 +37,8 @@ export default function DashboardPage() {
   const [announcementModalOpen, setAnnouncementModalOpen] = useState(false)
   const [eventForm, setEventForm] = useState(emptyEventForm)
   const [announcementForm, setAnnouncementForm] = useState(emptyAnnouncementForm)
+  const [editingEventId, setEditingEventId] = useState(null)
+  const [editingAnnouncementId, setEditingAnnouncementId] = useState(null)
   const [formMessage, setFormMessage] = useState('')
 
   useEffect(() => {
@@ -125,13 +127,58 @@ export default function DashboardPage() {
 
   const canCreate = user?.role === 'SDAO Office' || user?.role === 'Student Organizations'
 
+  const canModifyItem = (item) => {
+    return user?.role === 'SDAO Office'
+      || (user?.role === 'Student Organizations' && item.createdBy === user.id && item.status === 'pending')
+  }
+
+  const openCreateEvent = () => {
+    setFormMessage('')
+    setEditingEventId(null)
+    setEventForm(emptyEventForm)
+    setEventModalOpen(true)
+  }
+
+  const openEditEvent = (event) => {
+    setFormMessage('')
+    setEditingEventId(event.id)
+    setEventForm({
+      title: event.title || '',
+      description: event.description || '',
+      date: event.date || '',
+      time: event.time || '',
+      endTime: event.endTime || '',
+      facilityId: event.facilityId || event.location || '',
+    })
+    setEventModalOpen(true)
+  }
+
+  const openCreateAnnouncement = () => {
+    setFormMessage('')
+    setEditingAnnouncementId(null)
+    setAnnouncementForm(emptyAnnouncementForm)
+    setAnnouncementModalOpen(true)
+  }
+
+  const openEditAnnouncement = (announcement) => {
+    setFormMessage('')
+    setEditingAnnouncementId(announcement.id)
+    setAnnouncementForm({
+      title: announcement.title || '',
+      content: announcement.content || '',
+      priority: announcement.priority || 'Medium',
+    })
+    setAnnouncementModalOpen(true)
+  }
+
   const submitEvent = async (event) => {
     event.preventDefault()
     setFormMessage('')
 
     const facility = facilities.find(item => String(item.id || item.name) === eventForm.facilityId)
     const result = await makeRequest('php/events.php', {
-      action: 'create',
+      action: editingEventId ? 'update' : 'create',
+      id: editingEventId,
       title: eventForm.title,
       description: eventForm.description,
       date: eventForm.date,
@@ -147,6 +194,7 @@ export default function DashboardPage() {
     }
 
     setEventModalOpen(false)
+    setEditingEventId(null)
     setEventForm(emptyEventForm)
     await loadEvents()
   }
@@ -156,7 +204,8 @@ export default function DashboardPage() {
     setFormMessage('')
 
     const result = await makeRequest('php/announcements.php', {
-      action: 'create',
+      action: editingAnnouncementId ? 'update' : 'create',
+      id: editingAnnouncementId,
       title: announcementForm.title,
       content: announcementForm.content,
       priority: announcementForm.priority,
@@ -168,7 +217,40 @@ export default function DashboardPage() {
     }
 
     setAnnouncementModalOpen(false)
+    setEditingAnnouncementId(null)
     setAnnouncementForm(emptyAnnouncementForm)
+    await loadAnnouncements()
+  }
+
+  const removeEvent = async (event) => {
+    if (!window.confirm(`Remove "${event.title}"?`)) return
+
+    const result = await makeRequest('php/events.php', {
+      action: 'delete',
+      id: event.id,
+    })
+
+    if (!result.success) {
+      window.alert(result.message || 'Unable to remove event')
+      return
+    }
+
+    await loadEvents()
+  }
+
+  const removeAnnouncement = async (announcement) => {
+    if (!window.confirm(`Remove "${announcement.title}"?`)) return
+
+    const result = await makeRequest('php/announcements.php', {
+      action: 'delete',
+      id: announcement.id,
+    })
+
+    if (!result.success) {
+      window.alert(result.message || 'Unable to remove announcement')
+      return
+    }
+
     await loadAnnouncements()
   }
 
@@ -193,10 +275,7 @@ export default function DashboardPage() {
             {canCreate && (
               <button
                 className={`${styles.primaryButton} ${styles.smallButton}`}
-                onClick={() => {
-                  setFormMessage('')
-                  setEventModalOpen(true)
-                }}
+                onClick={openCreateEvent}
               >
                 {user.role === 'SDAO Office' ? 'Create Event' : 'Request Event'}
               </button>
@@ -218,6 +297,16 @@ export default function DashboardPage() {
                   <span className={`${styles.status} ${event.status === 'approved' ? styles.approved : ''}`}>
                     {event.status || 'pending'}
                   </span>
+                  {canModifyItem(event) && (
+                    <div className={styles.itemActions}>
+                      <button className={styles.editButton} onClick={() => openEditEvent(event)}>
+                        Edit
+                      </button>
+                      <button className={styles.removeButton} onClick={() => removeEvent(event)}>
+                        Remove
+                      </button>
+                    </div>
+                  )}
                 </article>
               ))
             )}
@@ -335,10 +424,7 @@ export default function DashboardPage() {
           {canCreate && (
             <button
               className={`${styles.primaryButton} ${styles.smallButton}`}
-              onClick={() => {
-                setFormMessage('')
-                setAnnouncementModalOpen(true)
-              }}
+              onClick={openCreateAnnouncement}
             >
               {user.role === 'SDAO Office' ? 'Create Announcement' : 'Request Announcement'}
             </button>
@@ -355,6 +441,16 @@ export default function DashboardPage() {
                 <p className={styles.meta}>
                   Posted by: {announcement.createdByUsername || announcement.created_by || 'NU Flow'}
                 </p>
+                {canModifyItem(announcement) && (
+                  <div className={styles.itemActions}>
+                    <button className={styles.editButton} onClick={() => openEditAnnouncement(announcement)}>
+                      Edit
+                    </button>
+                    <button className={styles.removeButton} onClick={() => removeAnnouncement(announcement)}>
+                      Remove
+                    </button>
+                  </div>
+                )}
               </article>
             ))
           )}
@@ -365,8 +461,11 @@ export default function DashboardPage() {
         <div className={styles.modalBackdrop}>
           <div className={styles.modal}>
             <div className={styles.modalHeader}>
-              <h2>{user.role === 'SDAO Office' ? 'Create New Event' : 'Request Event'}</h2>
-              <button className={styles.modalClose} onClick={() => setEventModalOpen(false)} aria-label="Close">
+              <h2>{editingEventId ? 'Edit Event' : user.role === 'SDAO Office' ? 'Create New Event' : 'Request Event'}</h2>
+              <button className={styles.modalClose} onClick={() => {
+                setEventModalOpen(false)
+                setEditingEventId(null)
+              }} aria-label="Close">
                 &times;
               </button>
             </div>
@@ -408,10 +507,13 @@ export default function DashboardPage() {
                 </div>
               </div>
               <div className={styles.modalActions}>
-                <button type="button" className={`${styles.primaryButton} ${styles.lightButton}`} onClick={() => setEventModalOpen(false)}>
+                <button type="button" className={`${styles.primaryButton} ${styles.lightButton}`} onClick={() => {
+                  setEventModalOpen(false)
+                  setEditingEventId(null)
+                }}>
                   Cancel
                 </button>
-                <button type="submit" className={styles.primaryButton}>Create Event</button>
+                <button type="submit" className={styles.primaryButton}>{editingEventId ? 'Save Changes' : 'Create Event'}</button>
               </div>
             </form>
           </div>
@@ -422,8 +524,11 @@ export default function DashboardPage() {
         <div className={styles.modalBackdrop}>
           <div className={styles.modal}>
             <div className={styles.modalHeader}>
-              <h2>{user.role === 'SDAO Office' ? 'Create Announcement' : 'Request Announcement'}</h2>
-              <button className={styles.modalClose} onClick={() => setAnnouncementModalOpen(false)} aria-label="Close">
+              <h2>{editingAnnouncementId ? 'Edit Announcement' : user.role === 'SDAO Office' ? 'Create Announcement' : 'Request Announcement'}</h2>
+              <button className={styles.modalClose} onClick={() => {
+                setAnnouncementModalOpen(false)
+                setEditingAnnouncementId(null)
+              }} aria-label="Close">
                 &times;
               </button>
             </div>
@@ -447,10 +552,13 @@ export default function DashboardPage() {
                 </select>
               </div>
               <div className={styles.modalActions}>
-                <button type="button" className={`${styles.primaryButton} ${styles.lightButton}`} onClick={() => setAnnouncementModalOpen(false)}>
+                <button type="button" className={`${styles.primaryButton} ${styles.lightButton}`} onClick={() => {
+                  setAnnouncementModalOpen(false)
+                  setEditingAnnouncementId(null)
+                }}>
                   Cancel
                 </button>
-                <button type="submit" className={styles.primaryButton}>Create</button>
+                <button type="submit" className={styles.primaryButton}>{editingAnnouncementId ? 'Save Changes' : 'Create'}</button>
               </div>
             </form>
           </div>

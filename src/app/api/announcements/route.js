@@ -49,7 +49,7 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     const body = await request.json()
-    const { action, title, content, id, reason } = body
+    const { action, title, content, priority, id, reason } = body
 
     let client, db, announcementsCollection
     try {
@@ -83,6 +83,7 @@ export async function POST(request) {
       const result = await announcementsCollection.insertOne({
         title,
         content,
+        priority,
         createdBy: user.id,
         createdByUsername: user.username,
         status: isSdao(user) ? 'approved' : 'pending',
@@ -136,6 +137,47 @@ export async function POST(request) {
         success: result.modifiedCount === 1,
         message: result.modifiedCount === 1 ? `Announcement ${action}d` : 'No pending announcement found',
       })
+    }
+
+    if (action === 'update' || action === 'delete') {
+      if (!ObjectId.isValid(id)) {
+        return NextResponse.json(
+          { success: false, message: 'Invalid announcement id' },
+          { status: 400 }
+        )
+      }
+
+      const existingAnnouncement = await announcementsCollection.findOne({ _id: new ObjectId(id) })
+      const canModify = isSdao(user)
+        || (isStudentOrganization(user) && existingAnnouncement?.createdBy === user.id && existingAnnouncement?.status === 'pending')
+
+      if (!existingAnnouncement || !canModify) {
+        return NextResponse.json(
+          { success: false, message: 'You can only edit or remove requests you are allowed to manage' },
+          { status: 403 }
+        )
+      }
+
+      if (action === 'delete') {
+        await announcementsCollection.deleteOne({ _id: new ObjectId(id) })
+        return NextResponse.json({ success: true, message: 'Announcement removed' })
+      }
+
+      await announcementsCollection.updateOne(
+        { _id: new ObjectId(id) },
+        {
+          $set: {
+            title,
+            content,
+            priority,
+            updatedAt: new Date(),
+            updatedBy: user.id,
+            updatedByUsername: user.username,
+          },
+        }
+      )
+
+      return NextResponse.json({ success: true, message: 'Announcement updated' })
     }
 
     return NextResponse.json(

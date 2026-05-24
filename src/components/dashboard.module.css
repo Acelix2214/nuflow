@@ -193,6 +193,30 @@
   color: #047857;
 }
 
+.itemActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.editButton,
+.removeButton {
+  border: 0;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 7px 11px;
+}
+
+.editButton {
+  background: #2563eb;
+}
+
+.removeButton {
+  background: #dc2626;
+}
+
 .calendarNav {
   display: flex;
   align-items: center;

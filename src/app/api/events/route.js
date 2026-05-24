@@ -143,6 +143,51 @@ export async function POST(request) {
       })
     }
 
+    if (action === 'update' || action === 'delete') {
+      if (!ObjectId.isValid(id)) {
+        return NextResponse.json(
+          { success: false, message: 'Invalid event id' },
+          { status: 400 }
+        )
+      }
+
+      const existingEvent = await eventsCollection.findOne({ _id: new ObjectId(id) })
+      const canModify = isSdao(user)
+        || (isStudentOrganization(user) && existingEvent?.createdBy === user.id && existingEvent?.status === 'pending')
+
+      if (!existingEvent || !canModify) {
+        return NextResponse.json(
+          { success: false, message: 'You can only edit or remove requests you are allowed to manage' },
+          { status: 403 }
+        )
+      }
+
+      if (action === 'delete') {
+        await eventsCollection.deleteOne({ _id: new ObjectId(id) })
+        return NextResponse.json({ success: true, message: 'Event removed' })
+      }
+
+      await eventsCollection.updateOne(
+        { _id: new ObjectId(id) },
+        {
+          $set: {
+            title,
+            description,
+            date,
+            time,
+            endTime,
+            location,
+            facilityId,
+            updatedAt: new Date(),
+            updatedBy: user.id,
+            updatedByUsername: user.username,
+          },
+        }
+      )
+
+      return NextResponse.json({ success: true, message: 'Event updated' })
+    }
+
     return NextResponse.json(
       { success: false, message: 'Unknown action' },
       { status: 400 }
