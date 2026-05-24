@@ -6,6 +6,11 @@ import DashboardLayout from '@/components/DashboardLayout'
 import styles from '@/components/dashboard.module.css'
 import { formatDate, formatTime, makeRequest } from '@/lib/api'
 
+function formatEventTime(event) {
+  if (!event?.time) return 'Not specified'
+  return event.endTime ? `${formatTime(event.time)} - ${formatTime(event.endTime)}` : formatTime(event.time)
+}
+
 export default function ApprovalsPage() {
   const router = useRouter()
   const [user, setUser] = useState(null)
@@ -113,7 +118,7 @@ export default function ApprovalsPage() {
                   <p>{event.description || 'No description provided.'}</p>
                   <div className={styles.meta}>
                     <div>Date: {formatDate(event.date)}</div>
-                    <div>Time: {formatTime(event.time)}</div>
+                    <div>Time: {formatEventTime(event)}</div>
                     <div>Location: {event.location || 'Not specified'}</div>
                     <div>Requested by: {event.createdByUsername || 'Student Organization'}</div>
                   </div>

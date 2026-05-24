@@ -3,6 +3,11 @@
 import { formatDate, formatTime } from '@/lib/api'
 
 export default function EventsList({ events, user }) {
+  const getEventTime = (event) => {
+    if (!event?.time) return 'Not specified'
+    return event.endTime ? `${formatTime(event.time)} - ${formatTime(event.endTime)}` : formatTime(event.time)
+  }
+
   return (
     <div>
       <h3>Events</h3>
@@ -24,7 +29,7 @@ export default function EventsList({ events, user }) {
               <p>{event.description}</p>
               <div style={{ fontSize: '14px', color: '#666', marginTop: '12px' }}>
                 <p><strong>Date:</strong> {formatDate(event.date)}</p>
-                <p><strong>Time:</strong> {formatTime(event.time)}</p>
+                <p><strong>Time:</strong> {getEventTime(event)}</p>
                 <p><strong>Location:</strong> {event.location}</p>
               </div>
               <p style={{ fontSize: '12px', color: '#999', marginTop: '12px' }}>

@@ -23,6 +23,11 @@ const emptyAnnouncementForm = {
   priority: 'Medium',
 }
 
+function formatEventTime(event) {
+  if (!event?.time) return 'Not specified'
+  return event.endTime ? `${formatTime(event.time)} - ${formatTime(event.endTime)}` : formatTime(event.time)
+}
+
 export default function DashboardPage() {
   const router = useRouter()
   const [user, setUser] = useState(null)
@@ -291,7 +296,7 @@ export default function DashboardPage() {
                   <p>{event.description || 'No description provided.'}</p>
                   <div className={styles.meta}>
                     <div>Date: {formatDate(event.date)}</div>
-                    <div>Time: {formatTime(event.time)}</div>
+                    <div>Time: {formatEventTime(event)}</div>
                     <div>Location: {event.location || 'Not specified'}</div>
                   </div>
                   <span className={`${styles.status} ${event.status === 'approved' ? styles.approved : ''}`}>
@@ -403,7 +408,7 @@ export default function DashboardPage() {
                               <p>{event.description || 'No description provided.'}</p>
                               <div className={styles.meta}>
                                 <div>Date: {formatDate(event.date)}</div>
-                                <div>Time: {formatTime(event.time)}</div>
+                                <div>Time: {formatEventTime(event)}</div>
                               </div>
                             </div>
                           ))
@@ -492,7 +497,7 @@ export default function DashboardPage() {
               <div className={styles.formRow}>
                 <div className={styles.field}>
                   <label htmlFor="eventEndTime">End Time</label>
-                  <input id="eventEndTime" type="time" value={eventForm.endTime} onChange={event => setEventForm({ ...eventForm, endTime: event.target.value })} />
+                  <input id="eventEndTime" type="time" required value={eventForm.endTime} onChange={event => setEventForm({ ...eventForm, endTime: event.target.value })} />
                 </div>
                 <div className={styles.field}>
                   <label htmlFor="eventFacilityId">Facility</label>
