@@ -23,9 +23,8 @@ const emptyAnnouncementForm = {
   priority: 'Medium',
 }
 
-function formatEventTime(event) {
-  if (!event?.time) return 'Not specified'
-  return event.endTime ? `${formatTime(event.time)} - ${formatTime(event.endTime)}` : formatTime(event.time)
+function getEventEndTime(event) {
+  return event?.endTime || event?.end_time || ''
 }
 
 export default function DashboardPage() {
@@ -152,7 +151,7 @@ export default function DashboardPage() {
       description: event.description || '',
       date: event.date || '',
       time: event.time || '',
-      endTime: event.endTime || '',
+      endTime: getEventEndTime(event),
       facilityId: event.facilityId || event.location || '',
     })
     setEventModalOpen(true)
@@ -296,7 +295,8 @@ export default function DashboardPage() {
                   <p>{event.description || 'No description provided.'}</p>
                   <div className={styles.meta}>
                     <div>Date: {formatDate(event.date)}</div>
-                    <div>Time: {formatEventTime(event)}</div>
+                    <div>Start Time: {event.time ? formatTime(event.time) : 'Not specified'}</div>
+                    <div>End Time: {getEventEndTime(event) ? formatTime(getEventEndTime(event)) : 'Not specified'}</div>
                     <div>Location: {event.location || 'Not specified'}</div>
                   </div>
                   <span className={`${styles.status} ${event.status === 'approved' ? styles.approved : ''}`}>
@@ -408,7 +408,8 @@ export default function DashboardPage() {
                               <p>{event.description || 'No description provided.'}</p>
                               <div className={styles.meta}>
                                 <div>Date: {formatDate(event.date)}</div>
-                                <div>Time: {formatEventTime(event)}</div>
+                                <div>Start Time: {event.time ? formatTime(event.time) : 'Not specified'}</div>
+                                <div>End Time: {getEventEndTime(event) ? formatTime(getEventEndTime(event)) : 'Not specified'}</div>
                               </div>
                             </div>
                           ))
