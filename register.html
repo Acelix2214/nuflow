@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="images/Logo.png" type="image/png">
+    <title>NU Flow - Register</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Wave background elements -->
+    <div class="waves back">
+        <svg viewBox="0 24 150 28">
+            <defs>
+                <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"></path>
+            </defs>
+            <use xlink:href="#gentle-wave" x="48" y="5"></use>
+            <use xlink:href="#gentle-wave" x="48" y="7"></use>
+        </svg>
+    </div>
+
+    <div class="login-container">
+        <!-- Logo section on the left side -->
+        <div class="login-logo-section boat">
+            <img src="images/Logo.png" alt="NU Flow Logo" class="login-logo-large">
+        </div>
+
+        <div class="login-card">
+            <div class="login-header">
+                <h1>NU Flow</h1>
+                <p>Create Your Account</p>
+            </div>
+            
+            <!-- Registration form with confirm password field -->
+            <form id="registerForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                </div>
+
+                <!-- Organization field -->
+                <div class="form-group">
+                    <label for="organization">Organization Name</label>
+                    <textarea id="organization" name="organization" rows="3" placeholder="Enter your organization name" required></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary">Register</button>
+                
+                <!-- Message display area -->
+                <div id="registerMessage" class="message" style="display: none;"></div>
+            </form>
+
+            <div class="form-links">
+                <p>Already have an account? <a href="index.html">Login here</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Front wave layer -->
+    <div class="waves front">
+        <svg viewBox="0 24 150 28">
+            <defs>
+                <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"></path>
+            </defs>
+            <use xlink:href="#gentle-wave" x="48" y="0"></use>
+            <use xlink:href="#gentle-wave" x="48" y="3"></use>
+        </svg>
+    </div>
+    
+    <script src="js/script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,284 @@
+.container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #000a91 0%, #b6aa05 100%);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden;
+}
+
+.waves {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 50vh;
+  width: 100%;
+  z-index: 0;
+}
+
+.waves:after {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  bottom: -100px;
+  height: 100px;
+  background: dodgerblue;
+}
+
+.waves svg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.waves use {
+  animation: wavewave 5s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
+  fill: dodgerblue;
+  opacity: 0.7;
+}
+
+.waves.back {
+  z-index: 1;
+}
+
+.waves.back use:nth-child(2) {
+  animation-delay: -4s;
+  animation-duration: 13s;
+}
+
+.waves.back use:nth-child(3) {
+  animation-delay: -5s;
+  animation-duration: 20s;
+}
+
+.waves.front {
+  z-index: 5;
+}
+
+.waves.front use:nth-child(2) {
+  animation-delay: -2s;
+  animation-duration: 7s;
+}
+
+.waves.front use:nth-child(3) {
+  animation-delay: -3s;
+  animation-duration: 10s;
+}
+
+@keyframes wavewave {
+  0% {
+    transform: translate(-90px);
+  }
+  100% {
+    transform: translate(85px);
+  }
+}
+
+.loginContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  position: relative;
+  z-index: 10;
+  gap: 40px;
+}
+
+.logoSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  z-index: 3;
+  position: fixed;
+  bottom: 15vh;
+  left: 10%;
+  animation: boat 3s ease-in-out infinite;
+}
+
+.logo {
+  max-width: 250px;
+  height: auto;
+  display: block;
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 450px;
+  animation: slideUp 0.6s ease-out;
+  position: relative;
+  z-index: 20;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  color: #193b75;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, #240c7a, #d1ee2a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header p {
+  color: black;
+  font-size: 1rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.formGroup input {
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.formGroup input:focus {
+  outline: none;
+  border-color: #000a91;
+  box-shadow: 0 0 0 3px rgba(0, 10, 145, 0.1);
+  transform: translateY(-2px);
+}
+
+.formGroup input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btnPrimary {
+  background: #000a91;
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  z-index: 100;
+  pointer-events: auto !important;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background: #b6aa05;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(182, 170, 5, 0.3);
+}
+
+.btnPrimary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.links {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.links a {
+  color: #000a91;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  font-weight: 600;
+}
+
+.links a:hover {
+  color: #b6aa05;
+  text-decoration: underline;
+}
+
+.message {
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.message.success {
+  background: #c6f6d5;
+  color: #22543d;
+  border: 1px solid #9ae6b4;
+}
+
+.message.error {
+  background: #fed7d7;
+  color: #742a2a;
+  border: 1px solid #fc8181;
+}
+
+@keyframes boat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@media (max-width: 600px) {
+  .card {
+    padding: 30px 20px;
+  }
+
+  .header h1 {
+    font-size: 24px;
+  }
+
+  .logo {
+    width: 80px;
+    height: 80px;
+  }
+}

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="images/Logo.png" type="image/png">
+    <title>NU Flow - Approvals Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <img src="images/Logo.png" alt="NU Flow Logo" class="logo">
+                <h1>Approvals Dashboard</h1>
+                <span id="userRole" class="user-role"></span>
+            </div>
+            <div class="header-right">
+                <span id="userName" class="user-name"></span>
+                <a href="dashboard.html" class="btn-secondary" style="margin-right: 10px;">Back to Dashboard</a>
+                <button id="logoutBtn" class="btn-secondary">Logout</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Pending Events Section -->
+            <section class="panel approval-panel">
+                <div class="panel-header">
+                    <h2>Pending Event Requests</h2>
+                    <button id="refreshEventsBtn" class="btn-secondary btn-small">Refresh</button>
+                </div>
+                <div class="pending-requests-list" id="pendingEventsList">
+                    <!-- Pending events will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Pending Announcements Section -->
+            <section class="panel approval-panel">
+                <div class="panel-header">
+                    <h2>Pending Announcement Requests</h2>
+                    <button id="refreshAnnouncementsBtn" class="btn-secondary btn-small">Refresh</button>
+                </div>
+                <div class="pending-requests-list" id="pendingAnnouncementsList">
+                    <!-- Pending announcements will be loaded here -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Rejection Reason Modal -->
+    <div id="rejectionReasonModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Rejection Reason</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="rejectionReasonForm">
+                <div class="form-group">
+                    <label for="rejectionReason">Please provide a reason for rejection:</label>
+                    <textarea id="rejectionReason" rows="4" placeholder="Enter reason for rejection..." required></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('rejectionReasonModal')">Cancel</button>
+                    <button type="submit" class="btn-danger">Reject</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/approvals.js"></script>
+</body>
+
+</html>

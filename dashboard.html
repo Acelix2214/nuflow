@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="images/Logo.png" type="image/png">
+    <title>NU Flow - Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <img src="images/Logo.png" alt="NU Flow Logo" class="logo">
+                <h1>Dashboard</h1>
+                <span id="userRole" class="user-role"></span>
+            </div>
+            <div class="header-right">
+                <!-- Inbox/Notifications -->
+                <div class="inbox-container">
+                    <button id="inboxBtn" class="btn-inbox">
+                        <span class="inbox-icon">📧</span>
+                        <span id="notificationCount" class="notification-badge" style="display: none;">0</span>
+                    </button>
+                    <div id="inboxDropdown" class="inbox-dropdown" style="display: none;">
+                        <div class="inbox-header">
+                            <h3>Notifications</h3>
+                            <button id="markAllReadBtn" class="btn-small">Mark All Read</button>
+                        </div>
+                        <div id="notificationsList" class="notifications-list">
+                            <!-- Notifications will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+                <span id="userName" class="user-name"></span>
+                <!-- Add approval dashboard link for SDAO -->
+                <a id="approvalDashboardLink" href="approvals.html" class="btn-secondary" style="display: none; margin-right: 10px;">Approvals</a>
+                <button id="logoutBtn" class="btn-secondary">Logout</button>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Content -->
+        <main class="dashboard-main">
+            <!-- Left Panel: Event Details -->
+            <section class="panel event-panel">
+                <div class="panel-header">
+                    <h2>Upcoming Events</h2>
+                    <button id="createEventBtn" class="btn-primary btn-small">Create Event</button>
+                </div>
+                <!-- User's pending events section (for Student Organizations) -->
+                <div id="userPendingSection" style="display: none; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid #ddd;">
+                    <h3 style="color: #ff6b6b; margin-bottom: 10px;">Your Pending Requests</h3>
+                    <div class="pending-events-list" id="userPendingEventsList">
+                        <!-- User's pending events will be loaded here -->
+                    </div>
+                </div>
+                <!-- SDAO pending approvals section -->
+                <div id="pendingApprovalsSection" style="display: none; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid #ddd;">
+                    <h3 style="color: #ff6b6b; margin-bottom: 10px;">Pending Approvals</h3>
+                    <div class="pending-events-list" id="pendingEventsList">
+                        <!-- Pending events will be loaded here -->
+                    </div>
+                </div>
+                <div class="event-list" id="eventList">
+                    <!-- Events will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Middle Panel: Calendar -->
+            <section class="panel calendar-panel">
+                <div class="panel-header">
+                    <h2>Calendar</h2>
+                    <div class="calendar-nav">
+                        <button id="prevMonth" class="btn-nav">&lt;</button>
+                        <span id="currentMonth"></span>
+                        <button id="nextMonth" class="btn-nav">&gt;</button>
+                    </div>
+                </div>
+                <div class="calendar-container">
+                    <div class="calendar-grid" id="calendarGrid">
+                        <!-- Calendar will be generated here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel: Facility Search & Availability -->
+            <section class="panel facility-panel">
+                <div class="panel-header">
+                    <h2>Facility Management</h2>
+                </div>
+                <div class="facility-search">
+                    <input type="text" id="facilitySearch" placeholder="Search facilities...">
+                </div>
+                <div class="facility-list" id="facilityList">
+                    <!-- Facilities will be loaded here -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Announcements Section -->
+        <section class="announcements-section">
+            <div class="panel-header">
+                <h2>Announcements</h2>
+                <button id="createAnnouncementBtn" class="btn-primary btn-small">Create Announcement</button>
+            </div>
+            <!-- User's pending announcements section (for Student Organizations) -->
+            <div id="userPendingAnnouncementsSection" style="display: none; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid #ddd;">
+                <h3 style="color: #ff6b6b; margin-bottom: 10px;">Your Pending Announcement Requests</h3>
+                <div class="pending-announcements-list" id="userPendingAnnouncementsList">
+                    <!-- User's pending announcements will be loaded here -->
+                </div>
+            </div>
+            <div class="announcements-list" id="announcementsList">
+                <!-- Announcements will be loaded here -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Modals -->
+    <!-- Create Event Modal -->
+    <div id="createEventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Event</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="createEventForm">
+                <div class="form-group">
+                    <label for="eventTitle">Event Title</label>
+                    <input type="text" id="eventTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventDescription">Description</label>
+                    <textarea id="eventDescription" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventDate">Date</label>
+                        <input type="date" id="eventDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventTime">Start Time</label>
+                        <input type="time" id="eventTime" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventEndTime">End Time</label>
+                        <input type="time" id="eventEndTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventFacilityId">Facility</label>
+                        <select id="eventFacilityId" required>
+                            <option value="">Select a facility</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="eventMessage" class="message" style="display: none; margin-bottom: 15px;"></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('createEventModal')">Cancel</button>
+                    <button type="submit" class="btn-primary">Create Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Announcement Modal -->
+    <div id="createAnnouncementModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create Announcement</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="createAnnouncementForm">
+                <div class="form-group">
+                    <label for="announcementTitle">Title</label>
+                    <input type="text" id="announcementTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="announcementContent">Content</label>
+                    <textarea id="announcementContent" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="announcementPriority">Priority</label>
+                    <select id="announcementPriority" required>
+                        <option value="Low">Low</option>
+                        <option value="Medium" selected>Medium</option>
+                        <option value="High">High</option>
+                        <option value="Urgent">Urgent</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('createAnnouncementModal')">Cancel</button>
+                    <button type="submit" class="btn-primary">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>

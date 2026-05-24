@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="images/Logo.png" type="image/png">
+    <link rel="stylesheet" href="css/style.css">
+    <title>NU Flow - Login</title>
+  <link rel="stylesheet" crossorigin href="/assets/index-BqHEznCQ.css">
+</head>
+
+<body>
+    <!-- Added wave background elements -->
+    <div class="waves back">
+        <svg viewBox="0 24 150 28">
+            <defs>
+                <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"></path>
+            </defs>
+            <use xlink:href="#gentle-wave" x="48" y="5"></use>
+            <use xlink:href="#gentle-wave" x="48" y="7"></use>
+        </svg>
+    </div>
+
+    <div class="login-container">
+        <!-- Added boat animation class to logo section -->
+        <div class="login-logo-section boat">
+            <img src="images/Logo.png" alt="NU Flow Logo" class="login-logo-large">
+        </div>
+
+        <div class="login-card">
+            <div class="login-header">
+                <!-- Added back the "NU Flow" text -->
+                <h1>NU Flow</h1>
+                <p>Centralized Events and Facility Management System</p>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <button type="submit" class="btn-primary">Login</button>
+
+                <div class="form-links">
+                    <p>Dont have an account? <a href="register.html"> Register</a>
+                </div>
+            </form>
+
+            <div id="loginMessage" class="message"></div>
+        </div>
+    </div>
+
+    <!-- Added front wave layer -->
+    <div class="waves front">
+        <svg viewBox="0 24 150 28">
+            <defs>
+                <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"></path>
+            </defs>
+            <use xlink:href="#gentle-wave" x="48" y="0"></use>
+            <use xlink:href="#gentle-wave" x="48" y="3"></use>
+        </svg>
+    </div>
+    
+    <script src="js/script.js"></script>
+</body>
+
+</html>
