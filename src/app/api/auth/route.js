@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { hash, compare } from 'bcryptjs'
 import { getMongoClient, getDatabaseConnectionMessage } from '@/lib/mongodb'
+import { getSessionUser } from '@/lib/auth'
 
 export async function POST(request) {
   try {
@@ -102,30 +103,21 @@ export async function POST(request) {
       }
 
       case 'check_session': {
-        const sessionCookie = request.cookies.get('session_user')
-
-        if (!sessionCookie) {
+        const user = await getSessionUser(request)
+        if (!user) {
           return NextResponse.json(
             { success: false, message: 'No session' },
             { status: 401 }
           )
         }
 
-        try {
-          const user = JSON.parse(sessionCookie.value)
-          return NextResponse.json({
-            success: true,
-            user_id: user.id,
-            username: user.username,
-            email: user.email,
-            role: user.role,
-          })
-        } catch (e) {
-          return NextResponse.json(
-            { success: false, message: 'Invalid session' },
-            { status: 401 }
-          )
-        }
+        return NextResponse.json({
+          success: true,
+          user_id: user.id,
+          username: user.username,
+          email: user.email,
+          role: user.role,
+        })
       }
 
       case 'logout': {

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getMongoClient, getDatabaseConnectionMessage } from '@/lib/mongodb'
 import { ObjectId } from 'mongodb'
+import { getSessionUser, isSdao, isStudentOrganization } from '@/lib/auth'
 
 export async function GET(request) {
   try {
@@ -17,7 +18,17 @@ export async function GET(request) {
       )
     }
 
-    const events = await eventsCollection.find({}).toArray()
+    const user = await getSessionUser(request)
+    const query = isSdao(user)
+      ? {}
+      : user
+        ? { $or: [{ status: 'approved' }, { createdBy: user.id }] }
+        : { status: 'approved' }
+
+    const events = await eventsCollection
+      .find(query)
+      .sort({ date: 1, time: 1, createdAt: -1 })
+      .toArray()
 
     return NextResponse.json({
       success: true,
@@ -38,7 +49,7 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     const body = await request.json()
-    const { action, title, description, date, time, location, facilityId } = body
+    const { action, title, description, date, time, endTime, location, facilityId, id, reason } = body
 
     let client, db, eventsCollection
     try {
@@ -53,27 +64,33 @@ export async function POST(request) {
       )
     }
 
-    const sessionCookie = request.cookies.get('session_user')
-    if (!sessionCookie) {
+    const user = await getSessionUser(request)
+    if (!user) {
       return NextResponse.json(
         { success: false, message: 'Unauthorized' },
         { status: 401 }
       )
     }
 
-    const user = JSON.parse(sessionCookie.value)
-
     if (action === 'create') {
+      if (!isSdao(user) && !isStudentOrganization(user)) {
+        return NextResponse.json(
+          { success: false, message: 'Only SDAO and student organizations can create event requests' },
+          { status: 403 }
+        )
+      }
+
       const result = await eventsCollection.insertOne({
         title,
         description,
         date,
         time,
+        endTime,
         location,
         facilityId,
         createdBy: user.id,
         createdByUsername: user.username,
-        status: user.role === 'SDAO Office' ? 'approved' : 'pending',
+        status: isSdao(user) ? 'approved' : 'pending',
         createdAt: new Date(),
       })
 
@@ -81,6 +98,48 @@ export async function POST(request) {
         success: true,
         message: 'Event created',
         eventId: result.insertedId.toString(),
+      })
+    }
+
+    if (action === 'approve' || action === 'reject') {
+      if (!isSdao(user)) {
+        return NextResponse.json(
+          { success: false, message: 'Only SDAO Office can approve or reject events' },
+          { status: 403 }
+        )
+      }
+
+      if (!ObjectId.isValid(id)) {
+        return NextResponse.json(
+          { success: false, message: 'Invalid event id' },
+          { status: 400 }
+        )
+      }
+
+      const update = action === 'approve'
+        ? {
+            status: 'approved',
+            approvedBy: user.id,
+            approvedByUsername: user.username,
+            approvedAt: new Date(),
+            rejectionReason: null,
+          }
+        : {
+            status: 'rejected',
+            rejectedBy: user.id,
+            rejectedByUsername: user.username,
+            rejectedAt: new Date(),
+            rejectionReason: reason || '',
+          }
+
+      const result = await eventsCollection.updateOne(
+        { _id: new ObjectId(id), status: 'pending' },
+        { $set: update }
+      )
+
+      return NextResponse.json({
+        success: result.modifiedCount === 1,
+        message: result.modifiedCount === 1 ? `Event ${action}d` : 'No pending event found',
       })
     }
 
